@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="组织推理系统 ORS：一个面向人类与 AI Agent 协作的开放组织运行框架。">
+  <meta name="keywords" content="人工智能, AI Agent, 组织设计, 人机协作, 组织学习, 决策系统, 多智能体">
+  <meta name="author" content="勇哥">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="组织推理系统｜Organization as a Reasoning System">
+  <meta property="og:description" content="一个面向人类与 AI Agent 协作的开放组织运行框架。">
+  <title>组织推理系统｜Organization as a Reasoning System</title>
+  <style>
+    :root {
+      --bg: #f8fafc; --surface: #fff; --surface-alt: #f1f5f9;
+      --text: #172033; --muted: #5d687c; --border: #dce3ec;
+      --primary: #3157d5; --accent: #0f766e; --code-bg: #101827;
+      --shadow: 0 12px 34px rgba(15,23,42,.08); --r: 16px; --w: 1120px;
+    }
+    @media(prefers-color-scheme:dark){
+      :root{--bg:#0f172a;--surface:#1e293b;--surface-alt:#1a2332;--text:#e2e8f0;--muted:#94a3b8;--border:#334155;--primary:#60a5fa;--accent:#5eead4;--code-bg:#0b1121;--shadow:0 12px 34px rgba(0,0,0,.3)}
+      .hero{background:linear-gradient(135deg,#0a0f1d,#0f1d4a 58%,#0f2a3d)!important}
+      .section{background:var(--surface)!important}
+      blockquote:not(.hero-quote){background:#1a2744!important}
+      th{background:#26344a!important;color:#e2e8f0}
+      .callout{background:#1a2744!important}
+      .callout.warning{background:#2a241a!important}
+      .callout.danger{background:#2a1412!important}
+      .tag{color:#cbd5e1;background:#334155}
+      .mermaid-wrap{background:#1a2332}
+      .navbar{background:rgba(15,23,42,.92);border-color:rgba(51,65,85,.9)}
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:88px}
+    body{margin:0;color:var(--text);background:var(--bg);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif;font-size:clamp(16px,1.05vw,18px);line-height:1.82}
+    a{color:var(--primary);text-decoration:none}
+    a:hover{text-decoration:underline}
+    h1,h2,h3{color:inherit;line-height:1.35;scroll-margin-top:90px}
+    h1{font-size:clamp(2.2rem,6vw,4.5rem);margin:0 0 1rem;letter-spacing:-.04em}
+    h2{margin:0 0 1.2rem;font-size:clamp(1.75rem,3vw,2.45rem);letter-spacing:-.025em}
+    h3{margin:2rem 0 .8rem;font-size:1.45rem}
+    p{margin:.8rem 0 1.15rem}
+    ul,ol{padding-left:1.45rem}
+    li{margin:.35rem 0}
+    blockquote{margin:1.4rem 0;padding:1.1rem 1.35rem;border-left:5px solid var(--primary);background:#eef3ff;border-radius:0 12px 12px 0;font-size:1.08rem;font-weight:600}
+    code{padding:.14rem .36rem;color:#173b8f;background:#eaf0ff;border-radius:5px;font-family:"SFMono-Regular",Consolas,"Liberation Mono",monospace;font-size:.9em}
+    pre{margin:1.2rem 0;padding:1.25rem;overflow-x:auto;color:#e5edf7;background:var(--code-bg);border-radius:13px;line-height:1.65}
+    pre code{padding:0;color:inherit;background:transparent}
+    table{width:100%;margin:1.2rem 0;border-spacing:0;border-collapse:separate;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:12px}
+    th,td{padding:.85rem 1rem;text-align:left;vertical-align:top;border-right:1px solid var(--border);border-bottom:1px solid var(--border)}
+    th:last-child,td:last-child{border-right:0}
+    tr:last-child td{border-bottom:0}
+    th{color:#1e293b;background:#edf2f8}
+    .container{width:min(calc(100% - 2rem),var(--w));margin:0 auto}
+    .navbar{position:sticky;top:0;z-index:1000;border-bottom:1px solid rgba(220,227,236,.9);background:rgba(255,255,255,.92);backdrop-filter:blur(14px)}
+    .nav-inner{min-height:70px;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+    .brand{color:var(--text);font-weight:800;letter-spacing:-.02em}
+    .brand:hover{text-decoration:none}
+    .nav-links{display:flex;flex-wrap:wrap;gap:1rem;font-size:.92rem}
+    .hero{overflow:hidden;padding:7rem 0 6rem;color:#fff;background:radial-gradient(circle at 80% 20%,rgba(59,130,246,.45),transparent 32%),radial-gradient(circle at 20% 80%,rgba(20,184,166,.28),transparent 30%),linear-gradient(135deg,#0f172a,#142b63 58%,#173e74)}
+    .hero h1,.hero h2{color:#fff}
+    .hero .subtitle{max-width:860px;margin:0 0 1.8rem;color:#dce8ff;font-size:clamp(1.15rem,2.2vw,1.45rem)}
+    .eyebrow{display:inline-block;margin-bottom:1rem;padding:.35rem .7rem;color:#cde0ff;border:1px solid rgba(255,255,255,.25);border-radius:999px;font-size:.88rem;letter-spacing:.08em;text-transform:uppercase}
+    .hero-quote{max-width:900px;margin-top:2rem;padding:1.2rem 1.4rem;color:#f8fbff;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:14px;font-size:1.12rem;font-weight:650}
+    .use-cases{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin:2rem 0}
+    .use-case-card{padding:1.2rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.15);border-radius:12px}
+    .use-case-card h3{color:#fff;margin:0 0 .5rem;font-size:1.05rem}
+    .use-case-card p{color:#cbd5e1;font-size:.9rem;margin:0}
+    .badges{display:flex;flex-wrap:wrap;gap:.6rem;margin-top:1.5rem}
+    .badge{display:inline-flex;align-items:center;padding:.38rem .7rem;color:#eaf2ff;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.16);border-radius:999px;font-size:.84rem}
+    .button-row{display:flex;flex-wrap:wrap;gap:.8rem;margin-top:2rem}
+    .button{display:inline-flex;align-items:center;justify-content:center;padding:.76rem 1.08rem;border-radius:9px;font-weight:700;transition:transform .15s}
+    .button:hover{transform:translateY(-1px);text-decoration:none}
+    .button-primary{color:#17346f;background:#fff}
+    .button-secondary{color:#fff;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08)}
+    main{padding:3.5rem 0 6rem}
+    .toc{margin-bottom:2.5rem;padding:1.5rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
+    .toc h2{font-size:1.35rem}
+    .toc ol{columns:2;column-gap:2rem}
+    .section{margin:2rem 0;padding:clamp(1.4rem,3vw,2.6rem);background:var(--surface);border:1px solid var(--border);border-radius:var(--r);box-shadow:var(--shadow)}
+    .section-number{margin-bottom:.5rem;color:var(--primary);font-weight:750;font-size:.9rem;letter-spacing:.07em;text-transform:uppercase}
+    .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin:1.2rem 0}
+    .grid-3{grid-template-columns:repeat(3,1fr)}
+    .card{padding:1.15rem;background:var(--surface-alt);border:1px solid var(--border);border-radius:12px}
+    .card h3,.card h4{margin-top:0}
+    .card p:last-child{margin-bottom:0}
+    .callout{margin:1.3rem 0;padding:1.15rem 1.25rem;border:1px solid #cbd8ff;border-radius:12px;background:#f2f6ff}
+    .callout.warning{border-color:#f1d79e;background:#fffbeb}
+    .callout.danger{border-color:#f1b4ad;background:#fff4f2}
+    .formula{margin:1.3rem 0;padding:1rem;text-align:center;color:#fff;background:linear-gradient(135deg,#273f8f,#0f766e);border-radius:12px;font-weight:750;font-size:1.05rem}
+    .mermaid-wrap{margin:1.4rem 0;padding:1rem;overflow-x:auto;background:#fff;border:1px solid var(--border);border-radius:12px}
+    .checklist{list-style:none;padding-left:0}
+    .checklist li{position:relative;padding-left:1.8rem}
+    .checklist li::before{position:absolute;left:0;content:"✓";color:var(--accent);font-weight:900}
+    .tag{display:inline-block;margin:.15rem;padding:.2rem .5rem;color:#334155;background:#e8edf4;border-radius:999px;font-size:.78rem}
+    .footer{padding:3rem 0;color:#cbd5e1;background:#0f172a}
+    .footer a{color:#bdd2ff}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr;gap:2rem}
+    .small{color:var(--muted);font-size:.9rem}
+    .back-to-top{position:fixed;right:1.2rem;bottom:1.2rem;z-index:100;width:46px;height:46px;display:grid;place-items:center;color:#fff;background:var(--primary);border-radius:50%;box-shadow:var(--shadow);font-weight:800}
+    .back-to-top:hover{text-decoration:none;background:#203f9c}
+    @media(max-width:800px){
+      .nav-links{display:none}
+      .use-cases,.grid,.grid-3,.footer-grid{grid-template-columns:1fr}
+      .hero{padding:5rem 0 4rem}
+      .toc ol{columns:1}
+      .section{padding:1.25rem}
+      table{display:block;overflow-x:auto;white-space:nowrap}
+    }
+  </style>
+</head>
+<body id="top">
+
+<nav class="navbar">
+  <div class="container nav-inner">
+    <a class="brand" href="#top">ORS · 组织推理系统</a>
+    <div class="nav-links">
+      <a href="#core-model">核心模型</a>
+      <a href="#dual-system">双系统</a>
+      <a href="#pilot">试点</a>
+      <a href="#canvas">画布</a>
+      <a href="#hypotheses">假设</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container">
+    <span class="eyebrow">Organization as a Reasoning System</span>
+    <h1>组织推理系统</h1>
+    <p class="subtitle">一个面向人类与 AI Agent 协作的开放组织运行框架</p>
+    <div class="badges">
+      <span class="badge">v0.1.0</span>
+      <span class="badge">Conceptual Framework</span>
+      <span class="badge">Open Research</span>
+      <span class="badge">Human–AI Collaboration</span>
+      <span class="badge">CC BY 4.0</span>
+    </div>
+    <div class="use-cases">
+      <div class="use-case-card"><h3>你是 AI 推进负责人</h3><p>老板让你提 AI 赋能方案。你知道单点能力会变快，但不知道组织整体的瓶颈会往哪跑。</p></div>
+      <div class="use-case-card"><h3>你在用 AI Agent 处理业务</h3><p>客户反馈分析跑起来了，但结果不稳定。你不知道问题出在 Agent 身上还是流程身上。</p></div>
+      <div class="use-case-card"><h3>你刚买了 Copilot</h3><p>效率有提升。你想知道下一步应该改造组织还是改造工具——以及怎么验证你的选择。</p></div>
+    </div>
+    <div class="hero-quote">AI 不会先淘汰组织里的某个岗位，它会先暴露那些无法把信号转化为行动、又无法从行动中学习的组织结构。</div>
+    <div class="button-row">
+      <a class="button button-primary" href="#core-model">阅读框架</a>
+      <a class="button button-secondary" href="#canvas">使用画布</a>
+      <a class="button button-secondary" href="https://github.com/sqzy1314520/organization-as-a-reasoning-system" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+<aside class="toc" aria-label="目录">
+  <h2>目录</h2>
+  <ol>
+    <li><a href="#overview">项目概览</a></li>
+    <li><a href="#problem">为什么 AI 越强，组织不一定越快</a></li>
+    <li><a href="#value-traps">四个 AI 价值黑洞</a></li>
+    <li><a href="#core-model">七层组织推理闭环</a></li>
+    <li><a href="#dual-system">执行系统与推理系统</a></li>
+    <li><a href="#classification">任务分类框架</a></li>
+    <li><a href="#governance">四种需要重新设计的权力</a></li>
+    <li><a href="#failure-modes">常见退化模式</a></li>
+    <li><a href="#pilot">最小试点方法</a></li>
+    <li><a href="#canvas">组织推理画布</a></li>
+    <li><a href="#hypotheses">可证伪假设</a></li>
+  </ol>
+</aside>
+
+<section class="section" id="overview">
+  <div class="section-number">01 · Overview</div>
+  <h2>项目概览</h2>
+  <p><strong>Organization as a Reasoning System</strong>（ORS）是一套用于分析和设计人类、AI Agent、数据、工具与组织责任之间协作关系的开放框架。</p>
+  <blockquote>当信息处理、方案生成和局部执行的成本被 AI 大幅降低后，组织应该如何重新设计信号、意图、任务、能力、决策、责任与反馈之间的关系？</blockquote>
+  <div class="callout warning"><strong>项目状态：</strong>概念框架，并非已经经过广泛验证的管理理论。欢迎反例和实验数据。</div>
+  <div class="formula">稳定执行系统 ＋ 动态推理系统 ＝ 更完整的 AI 组织能力</div>
+</section>
+
+<section class="section" id="problem">
+  <div class="section-number">02 · Problem</div>
+  <h2>为什么 AI 越强，组织不一定越快？</h2>
+  <div class="grid grid-3">
+    <article class="card"><h3>信息处理成本↓</h3><p>搜索、摘要、分类、提取和分析信息。</p></article>
+    <article class="card"><h3>方案生成成本↓</h3><p>文本、代码、设计和候选方案批量生成。</p></article>
+    <article class="card"><h3>局部执行成本↓</h3><p>标准任务由 Agent 和工作流完成。</p></article>
+  </div>
+  <p>但单点变快≠组织变快。瓶颈迁移到：问题定义→上下文→人机组合→方案验证→冲突消解→决策权归属→反馈闭环。</p>
+  <pre><code>方案生成更快 → 候选更多 → 审核协调增加 → 决策负担上升 → 反馈链路变长 → 组织未必变快</code></pre>
+  <blockquote>问题不一定是 AI 没创造价值，而可能是组织没有建立吸收新增能力的机制。</blockquote>
+</section>
+
+<section class="section" id="value-traps">
+  <div class="section-number">03 · Value Traps</div>
+  <h2>四个 AI 价值黑洞</h2>
+  <div class="grid">
+    <article class="card"><h3>1. 有损传递</h3><p>原始信号经过标签、摘要、转述和层级汇报后不断损失。</p><pre><code>客户反馈 → 标签 → 周报 → 管理层摘要 → 战略结论</code></pre></article>
+    <article class="card"><h3>2. 瓶颈迁移</h3><p>AI 消除生成约束后，瓶颈移到评估、验证、决策和协调。</p><pre><code>原瓶颈：写不出方案 → 新瓶颈：不知道哪个方案值得执行</code></pre></article>
+    <article class="card"><h3>3. 协调成本</h3><p>更多参与方产生重复分析、输出冲突、责任模糊。多 Agent 不会自动产生集体智慧。</p></article>
+    <article class="card"><h3>4. 反馈断裂</h3><p>AI 工作流只完成"输入—生成—输出"，结果没有写回系统。</p><pre><code>输入→生成→判断→行动→观察→更新→下一轮</code></pre></article>
+  </div>
+</section>
+
+<section class="section" id="core-model">
+  <div class="section-number">04 · Core Model</div>
+  <h2>七层组织推理闭环</h2>
+  <blockquote>未来组织的竞争力不只取决于有多少 AI，而取决于能否让信号、意图、能力、决策、责任与反馈形成低延迟、高保真的闭环。</blockquote>
+  <div class="mermaid-wrap"><div class="mermaid">
+flowchart TD
+    A["意图 Intent"] --> B["感知 Sense"]
+    B --> C["编译 Compile"]
+    C --> D["路由 Route"]
+    D --> E["探索与执行 Explore/Execute"]
+    E --> F["判断与责任 Judge/Account"]
+    F --> G["反馈与学习 Learn"]
+    G --> A & B & C & D
+  </div></div>
+  <p>七层不是七个部门，是组织从信号到行动再到学习必须完成的七种功能。</p>
+  <div class="grid">
+    <article class="card"><h4>① 意图</h4><p>目标、约束、预算、停止条件。</p></article>
+    <article class="card"><h4>② 感知</h4><p>信号采集，保留原始证据。</p></article>
+    <article class="card"><h4>③ 编译</h4><p>模糊意图→可执行任务结构。</p></article>
+    <article class="card"><h4>④ 路由</h4><p>按任务特征组合人/Agent/工具。</p></article>
+    <article class="card"><h4>⑤ 探索/执行</h4><p>探索模式并行试错，执行模式标准化输出。</p></article>
+    <article class="card"><h4>⑥ 判断/责任</h4><p>评估方案、选择行动、明确责任人。</p></article>
+    <article class="card"><h4>⑦ 反馈/学习</h4><p>结果写回上下文、规则、权限和工作流。</p></article>
+  </div>
+  <div class="callout">编译层 ≠ Prompt Engineering。Prompt 只是接口之一，完整编译还涉及数据、权限、工具、验证和异常处理。</div>
+</section>
+
+<section class="section" id="dual-system">
+  <div class="section-number">05 · Dual Operating System</div>
+  <h2>执行系统与推理系统</h2>
+  <div class="mermaid-wrap"><div class="mermaid">
+flowchart LR
+    T["任务"] --> Q{"特征"}
+    Q -->|"目标明确/路径成熟"| A["执行系统"]
+    Q -->|"问题模糊/高反馈价值"| B["推理系统"]
+    A --> A1["固定流程·稳定权限·强审计"]
+    B --> B1["动态路由·并行探索·快速验证"]
+    B -->|"方案成熟"| A
+    A -->|"异常增加"| B
+  </div></div>
+  <div class="grid">
+    <article class="card"><h3>执行系统</h3><p>财务结算、权限管理、合规检查、安全操作。强调稳定、效率、可审计、低方差。</p></article>
+    <article class="card"><h3>推理系统</h3><p>市场洞察、产品探索、复杂客户问题。强调感知、假设、验证、反馈与适应。</p></article>
+  </div>
+  <pre><code>未知问题 → 多路径探索 → 有效方案 → 标准化 → 固定流程 → 自动化执行</code></pre>
+  <pre><code>稳定流程 → 异常增加 → 旧规则失效 → 重新定义问题 → 探索新路径</code></pre>
+</section>
+
+<section class="section" id="classification">
+  <div class="section-number">06 · Task Classification</div>
+  <h2>任务分类框架</h2>
+  <table>
+    <thead><tr><th>模糊度</th><th>风险</th><th>推荐模式</th></tr></thead>
+    <tbody>
+      <tr><td>低</td><td>低</td><td>AI 自动执行，人工抽检</td></tr>
+      <tr><td>低</td><td>高</td><td>AI 建议，人工审批</td></tr>
+      <tr><td>高</td><td>低</td><td>AI 并行探索，人类选择</td></tr>
+      <tr><td>高</td><td>高</td><td>人类主导判断，AI 提供分析</td></tr>
+    </tbody>
+  </table>
+  <div class="callout warning">正式部署还需加入可逆性、影响范围、证据质量、模型校准和法律责任。</div>
+</section>
+
+<section class="section" id="governance">
+  <div class="section-number">07 · Governance</div>
+  <h2>四种需要重新设计的权力</h2>
+  <div class="grid">
+    <article class="card"><h3>信息权</h3><p>谁能查看原始信号、上下文和 Agent 运行记录。最小必要+可回溯。</p></article>
+    <article class="card"><h3>调用权</h3><p>谁能调用人、模型、Agent、工具、算力、预算。过窄锁住能力，过宽带来风险。</p></article>
+    <article class="card"><h3>决策权</h3><p>AI 可以建议什么、自动执行什么、哪些必须人工审批、谁有否决权。</p></article>
+    <article class="card"><h3>责任权</h3><p>谁负责解释、监控、停止、修复并承担后果。"AI 做的"不能成为责任主体。</p></article>
+  </div>
+  <blockquote>信息流可以去层级化，责任流不能被彻底模糊化。</blockquote>
+</section>
+
+<section class="section" id="failure-modes">
+  <div class="section-number">08 · Failure Modes</div>
+  <h2>常见退化模式</h2>
+  <div class="grid">
+    <article class="card"><h3>生成工厂</h3><p>方案越来多，没人验证和选择。<br><strong>根因：</strong>生成↑，判断未↑。</p></article>
+    <article class="card"><h3>自动化套壳</h3><p>原流程不变，中间加 AI，整体周期没缩短。</p></article>
+    <article class="card"><h3>Agent 会议室</h3><p>多 Agent 重复冲突输出，缺证据标准和汇总机制。</p></article>
+    <article class="card"><h3>指标幻觉</h3><p>指标提升但真实结果变差，系统学会迎合评分。</p></article>
+    <article class="card"><h3>责任真空</h3><p>业务、技术、管理者都把错误归因于自动化系统。</p></article>
+    <article class="card"><h3>永久探索</h3><p>不断生成新方案，缺预算、收敛标准和执行接口。</p></article>
+  </div>
+</section>
+
+<section class="section" id="pilot">
+  <div class="section-number">09 · Pilot Playbook</div>
+  <h2>最小试点七步法</h2>
+  <ol>
+    <li><strong>选具体任务</strong> — 如"每周分析客户流失原因"，不是"重构客户成功部门"</li>
+    <li><strong>画信号到行动链路</strong> — 记录信号来源、摘要次数、问题定义、路由、判断、执行</li>
+    <li><strong>识别主瓶颈</strong> — 感知/编译/路由/判断/责任/反馈，哪个环节卡住</li>
+    <li><strong>设计最小闭环</strong> — 输入/输出/人机分工/审批节点/失败处理</li>
+    <li><strong>设权限与责任</strong> — 谁能访问、调用、审批、停止</li>
+    <li><strong>运行有限周期</strong> — 范围、预算、检查比例、终止规则</li>
+    <li><strong>前后对比</strong> — 效率/质量/学习/治理四项指标</li>
+  </ol>
+  <p>适合第一批：<span class="tag">客户反馈分析</span><span class="tag">内容质检</span><span class="tag">市场情报</span><span class="tag">竞品监测</span><span class="tag">销售线索分级</span><span class="tag">知识问答</span></p>
+  <p>不适合第一批：<span class="tag">重大法律判断</span><span class="tag">不可逆人事决策</span><span class="tag">核心财务控制</span><span class="tag">医疗诊断</span></p>
+</section>
+
+<section class="section" id="canvas">
+  <div class="section-number">10 · Canvas</div>
+  <h2>组织推理画布</h2>
+  <p>复制以下模板分析真实业务任务：</p>
+  <pre><code>## 1. 当前任务
+名称 / 负责人 / 目标 / 预期结果
+
+## 2. 任务特征
+模糊度 / 风险 / 可逆性 / 反馈速度 / 标准化程度
+
+## 3-9. 七层闭环诊断
+意图 → 感知 → 编译 → 路由 → 探索/执行 → 判断/责任 → 反馈
+
+## 10. 试点指标
+信号到决策时间 / 错误率 / 返工率 / 反馈周期 / 人工介入次数</code></pre>
+</section>
+
+<section class="section" id="hypotheses">
+  <div class="section-number">11 · Hypotheses</div>
+  <h2>可证伪假设</h2>
+  <div class="grid">
+    <article class="card"><h3>H1：反馈延迟</h3><p>缩短反馈周期比单纯提高生成速度更能改善绩效。</p></article>
+    <article class="card"><h3>H2：瓶颈迁移</h3><p>生成成本↓ → 瓶颈移到评估、决策和协调。</p></article>
+    <article class="card"><h3>H3：编译质量</h3><p>问题定义和组织上下文的质量不低于模型能力。</p></article>
+    <article class="card"><h3>H4：双系统</h3><p>执行+推理双模式优于单一模式。</p></article>
+    <article class="card"><h3>H5：责任清晰度</h3><p>明确自动化边界和责任主体提高信任度。</p></article>
+    <article class="card"><h3>H6：动态路由边界</h3><p>动态路由有收益的前提：差异+反馈价值>协调成本。</p></article>
+  </div>
+</section>
+
+<section class="section" id="contribute">
+  <div class="section-number">12 · Contributing</div>
+  <h2>参与贡献</h2>
+  <p>欢迎案例、反例、实证数据、诊断工具和理论修正。</p>
+  <div class="callout">尤其欢迎证明框架无效的案例和 AI 使组织变慢的案例。</div>
+  <div class="grid">
+    <article class="card"><h3>理论/文档/图表</h3><p>CC BY 4.0 — 自由使用，注明来源即可。</p></article>
+    <article class="card"><h3>代码/Schema/脚本</h3><p>Apache License 2.0。</p></article>
+  </div>
+  <blockquote>开放理论项目的价值不取决于收集了多少赞同，而取决于能否吸收高质量的反例。</blockquote>
+</section>
+
+</main>
+
+<footer class="footer">
+  <div class="container">
+    <h2 style="color:#fff;margin:0 0 .5rem">Organization as a Reasoning System</h2>
+    <p>v0.1.0 · Conceptual Framework</p>
+    <hr style="border:0;border-top:1px solid #334155;margin:2rem 0">
+    <p class="small" style="color:#94a3b8">© 2026 勇哥 · CC BY 4.0 / Apache 2.0</p>
+  </div>
+</footer>
+
+<a class="back-to-top" href="#top" aria-label="返回顶部">↑</a>
+
+<script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+mermaid.initialize({
+  startOnLoad:true, theme:"neutral", securityLevel:"loose",
+  flowchart:{htmlLabels:true, curve:"basis"},
+  themeVariables:{
+    fontFamily:'Inter,"PingFang SC","Microsoft YaHei",Arial,sans-serif',
+    primaryColor:"#eef3ff", primaryTextColor:"#172033",
+    primaryBorderColor:"#3157d5", lineColor:"#64748b",
+    secondaryColor:"#ecfdf5", tertiaryColor:"#f8fafc"
+  }
+});
+</script>
+</body>
+</html>
